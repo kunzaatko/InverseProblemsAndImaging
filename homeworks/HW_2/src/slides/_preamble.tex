@@ -1,0 +1,64 @@
+\documentclass[x11names, 11pt]{beamer}
+\usepackage{amsmath, amssymb, amsthm, mathtools, unicode-math, derivative}
+\usepackage[framemethod=TikZ]{mdframed}
+\usepackage{environ}
+
+% \renewenvironment{problem}[1][]{%
+% \ifstrempty{#1}%
+% {\mdfsetup{%
+% frametitle={%
+% \tikz[baseline=(current bounding box.east),outer sep=0pt]
+% \node[anchor=east,rectangle,fill=blue!20]
+% {\strut Problem~\thesection};}}
+% }%
+% {\mdfsetup{%
+% frametitle={%
+% \tikz[baseline=(current bounding box.east),outer sep=0pt]
+% \node[anchor=east,rectangle,fill=blue!20]
+% {\strut Problem~\thesection:~#1};}}%
+% }%
+% \mdfsetup{innertopmargin=10pt,linecolor=blue!20,%
+% linewidth=2pt,topline=true,%
+% frametitleaboveskip=\dimexpr-\ht\strutbox\relax
+% }
+% \begin{mdframed}[] \relax%
+% }{\end{mdframed}}
+
+\usepackage[english]{babel} % Load characters and hyphenation
+\usepackage[english=british]{csquotes}	% English quotes
+
+\usepackage{import}
+\usepackage{graphicx}
+\graphicspath{{figs/}} % Paths where images are looked for
+
+\usepackage{hyperref}
+\usepackage{tikz}
+\usepackage{dirtytalk}
+
+% Define theorem-like environments for problems and tasks
+\theoremstyle{note}
+\newtheorem{task}[section]{Task}
+
+\usepackage{xcolor-material}
+\usepackage{layout}
+
+\usefonttheme[onlymath]{serif}
+
+\title{Homework 2}
+
+\usetheme{Berlin}
+\usecolortheme{beaver}
+\setbeamertemplate{navigation symbols}{}
+% \setbeamertemplate{headline}{}
+\makeatletter
+\beamer@theme@subsectionfalse%
+\makeatother
+		
+
+\makeatletter
+\setbeamertemplate{footline} {}
+\makeatother
+
+\include{_commands.tex}
+
+\begin{document}

@@ -1,0 +1,170 @@
+\section{Autoconvolution}%
+\label{sec:autoconvolution}
+
+Consider the autoconvolution operator $K$ in $L^2(0,1)$ defined for $x \in L^2(0,1)$ by
+\[
+  K(x)(t) = \int_0^t x(t-s)x(s)\,ds, \quad s \in (0,1)
+\]
+with linearization around $x_0 \in L^2(0,1)$ given by
+\[
+  K'(x_0)h(t) = 2\int_0^t x_0(t-s)h(s)\,ds, \quad t \in (0,1).
+\]
+\begin{enumerate}[label = (\alph*)]
+  \item Take $x(s) = 2e^{-2s}$ and show that $y(t) = K(x)(t) = 4te^{-2t}$.
+\end{enumerate}
+\nopagebreak
+\noindent\hrulefill
+
+Taking \(x(s) = 2e^{-2s}\) and plugging it into the autoconvolution operator definition, we get
+\[
+  K(x)(t) = \int_{0}^{t} x(t - s) x(s) \odif{s} = \int_{0}^{t} 2e^{-2(t - s)} 2 e^{-2s} \odif{s} = 4e^{-2t}
+  \int_{0}^{t} 1 \odif{s} = 4e^{-2t} \left[ t \right]_0^{t} = 4te^{-2t} = y(t)
+\]
+\nopagebreak
+\noindent\hrulefill
+
+\begin{enumerate}[resume, label = (\alph*)]
+  \item Implement $K$ numerically using a quadrature rule as a mapping from $\mathbb{R}^{256}$ to $\mathbb{R}^{256}$.
+    Use your code to find an approximation of $K(x)(t)$ and compare graphically to $y(t)$.
+\end{enumerate}
+
+\nopagebreak
+\noindent\hrulefill
+
+\begin{figure}[h]
+  \centering
+  \begin{subfigure}[t]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{fig_compare_quadrature_v_analytical_forward_autoconvolution.pdf}
+    \caption{\label{fig:comparison-analytical-v-numerical-forward-autoconvolution}\
+      Comparison of the quadrature rule numerical solution \(K(x)(t)\) to the analytical solution \(y(t)\).
+    }
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{fig_compare_quadrature_v_analytical_forward_autoconvolution_diff.pdf}
+    \caption{\label{fig:compare-quadrature-v-analytical-forward-autoconvolution-difference}\
+      The difference of the numerical and the analytical solutions for the autoconvolution operator.
+    }
+  \end{subfigure}
+  \caption{\label{fig:comparison-forward-autoconvolution}\
+    A graphical comparison of the numerical solution with the analytical solution of the autoconvolution operator.
+  }
+\end{figure}
+
+\nopagebreak
+\noindent\hrulefill
+
+\begin{enumerate}[resume, label = (\alph*)]
+  \item Add noise of relative size 5\% to $y$ to get $y_\delta$ and consider solving $K(x) = y_\delta$ by linearization:
+    For the constant function $x_0(t) = 2 - 1.5t$, discretize the operator $K'(x_0)$ as a matrix $A_0 \in
+      R^{256\times256}$.
+    Solve using Tikhonov regularization the linearized and discretized inverse problem to find an approximate solution
+      $x_1(t)$.
+    Choose the regularization according to one of the parameter choice rules.
+    Plot the solution and compare to $x(t)$. Calculate the error.
+  \item Take another Newton step to find $x_2(t)$.
+\end{enumerate}
+
+\begin{figure}[h]
+  \centering
+  \begin{subfigure}[t]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{fig_first_newton_step.pdf}
+    \caption{\label{fig:first-newton-step}\
+      A visualization of the first newton step of the reconstruction. 
+      The Tikhonov regularization parameter of \(\alpha = 0.05\) for the solution of \(h_0\) was chosen by empirically.
+    }
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{fig_newton_iterations_reg_lines.pdf}
+    \caption{\label{fig:newton-iterations}\
+      First \(4\) newton iterations of the linearized reconstruction.
+      It is observable that the higher the iteration the greater the need for the regularization.
+      This is sensible intuitively, as we are getting closer to the true solution and therefore also the relative error
+        of the difference \(y_\delta - K(x_i)\) increases with the iteration number \(i\).
+    }
+  \end{subfigure}
+  \caption{\label{fig:linearization-recontruction}\
+    Newton iteration reconstruction.
+  }
+\end{figure}
+
+\nopagebreak
+\noindent\hrulefill
+
+\begin{enumerate}[resume, label = (\alph*)]
+  \item What happens if you start from the constant function $x_0(t) = -2 + 1.5t$ instead?
+  \item Is the inverse problem $(K(x) = y)$ ill-posed; is it locally ill-posed?
+\end{enumerate}
+
+\nopagebreak
+\noindent\hrulefill
+
+Even if we increase the number of iterations, the reconstruction fails to converge as is visible in the
+\cref{fig:newton-iterations-from-far-function}.
+This can be regarded as a visual demonstration of local ill-posedness of the autoconvolution operator.
+
+\begin{figure}[h]
+  \centering
+  \begin{subfigure}[t]{0.48\textwidth}
+  \includegraphics[width=\textwidth]{fig_newton_iterations_reg_lines_alt.pdf}
+  \caption{\label{fig:newton-iterations-from-far-function}\
+    \(15\) Newton iterations of the inverse linearized autoconvolution reconstruction starting from a distant function from the
+      true solution.
+  }
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.48\textwidth}
+  \includegraphics[width=\textwidth]{fig_newton_iterations_reg_lines_minus.pdf}
+  \caption{\label{fig:newton-iterations-from-far-function-minus}\
+    \(4\) Newton iterations of the inverse linearized autoconvolution reconstruction starting from a distant function
+    from the desired solution converges to \(-x\).
+  }
+  \end{subfigure}
+  \caption{\label{fig:newton-iterations-from-afar}\
+    Newton iterations of the inverse linearized autoconvolution reconstruction starting from a distant function.
+  }
+\end{figure}
+
+This also brings us to the subject of ill-posedness.
+Due to the quadratic nature of the autoconvolution operator, if \(x\) is a solution to the inverse problem, then \(-x\)
+  is also a solution with the same mapping.
+With this in mind we can understand more, why an arbitrary number of iterations would not suffice for the newton steps
+  from the initial linearization point function \(x_0 = -2 + 1.5t\) to converge to the desired solution \(x\).
+  In fact it converges instead to the function \(-x\) as is visible from the
+  \cref{fig:newton-iterations-from-far-function-minus}.
+This is also a demonstration of the non-uniqueness of the convolution operator and this argumentation holds for any
+  quadratic operator.
+Due to the fact that the forward operator has a ``smoothing'' effect, we can intuitively expect local ill-posedness due
+  to the inherent lack of continuousness with respect to small perturbations of the mapping \(y\).
+In other words if we have \(y + \delta y \), we can expect the solutions error \(\delta x\) of the inverse problem,
+  denoting \(\hat{x}(y + \delta y) = x + \delta x\), to be have a much larger norm than the that of \(\delta y\)
+  (especially in any Sobolev norm).
+
+\nopagebreak
+\noindent\hrulefill
+
+\section{Radial Calderón problem}%
+\label{sec:radial-calderon-problem}
+
+The radial FIT/Calderón problem linearized around $\gamma_0 = 1$ is defined through the operator $K$ as follows \[
+  Kh(n) = -2\int_0^1 h(r)r^{2n-1}\,dr = \lambda_n, \tag{1}
+\]
+with $\lambda_n$ denoting eigenvalues of $\Lambda_\gamma - \Lambda_1$.
+\begin{enumerate}[label = (\alph*)]
+  \item In the file \texttt{DHW3.mat} on inside you find 10 precomputed (`measured') eigenvalues for a particular
+      $\Lambda_\gamma - \Lambda_1$.
+    Compute an estimate of $\gamma = 1 + h$ using both Tikhonov and TV regularization and plot it.
+\end{enumerate}
+
+\nopagebreak
+\noindent\hrulefill
+
+\begin{enumerate}[resume, label = (\alph*)]
+  \item Knowing that $\gamma$ has the radial form
+    \[
+      \gamma(x) =
+      \begin{cases}
+        1 + \hat{q}, & |x| \leq R, \\
+        1, & R < |x| \leq 1.
+      \end{cases}
+    \]
+    give an estimate from the above of the contrast $\hat{q}$ and radius $R$.
+\end{enumerate}

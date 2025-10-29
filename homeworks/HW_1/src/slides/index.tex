@@ -1,0 +1,381 @@
+\frame{\titlepage}
+
+\section{Heat Equation}%
+\label{sec:heat-equation}
+
+\begin{frame}
+    \begin{problem}[Inverse of the Heat Equation]
+     Heat equation operator
+    \[
+        Kx(t) = \int_0^\pi x(s)k(t, s)ds \quad k(t, s) = \frac{2}{\pi} \sum_{n=1}^{\infty} e^{-T n^2} \sin(nt) \sin(ns)
+    \]
+    \end{problem}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Task 1: Singular System}
+    \only<1>{
+        \begin{task}
+            Show that $K$ has the singular system:
+            \[
+                x_j(t) = \sqrt{\frac{2}{\pi}} \sin(jt), \quad y_j(s) = \sqrt{\frac{2}{\pi}} \sin(js), \quad \mu_j = e^{-T j^2}
+            \]
+        \end{task}
+    }
+
+    \only<2-9>{
+        \begin{itemize}
+            \item $Kx_j(t) = \mu_j y_j(t)$
+        \end{itemize}
+        \only<3-9>{
+                \begin{align*}
+                    Kx_j(t) &= 
+                \only<3-5>{
+                    \left( \frac{2}{\pi} \right)^{\tfrac{3}{2}} \int_{0}^{\pi} \sin(js) \sum_{n
+                = 1}^{\infty} e^{-Tn^2} \sin(ns) \sin(nt) \odif{s}
+                    }
+                \only<4-6>{
+                    \only<4-5>{\\&=} \left( \frac{2}{\pi} \right)^{\tfrac{3}{2}} \sum_{n = 1}^{\infty} e^{-Tn^2} \sin(nt)
+                    \int_{0}^{\pi} \sin(js)\sin(ns)  \odif{s}
+                }
+                \only<6-7>{
+                    \only<6>{\\&=} \left( \frac{2}{\pi} \right)^{\tfrac{3}{2}} \sum_{n = 1}^{\infty} e^{-Tn^2} \sin(nt) \int_{0}^{\pi}
+                \frac{\cos(ns - js) - \cos(ns + js)}{2}  \odif{s}
+                }
+                \only<7-8>{
+                    \only<7>{\\&=} \left( \frac{2}{\pi} \right)^{\tfrac{3}{2}} e^{-Tj^2} \sin(nt) \int_{0}^{\pi}
+                \frac{\cos(js - js) - \cos(js + js)}{2}  \odif{s}
+                }
+                \only<8-9>{
+                    \only<8>{\\&=} \sqrt{\frac{2}{\pi}} \sin(jt) e^{-T j^2}\only<9>{ = \mu_j y_j(t)}
+                }
+        \end{align*}
+        }
+    \only<4-5>{ 
+            \onslide<5>{
+            by Lebesgue's dominated convergence with the envelope
+            \[
+                g_n(s) = \sum_{n = 1}^{\infty} e^{-Tn^2} < \frac{1}{e^{T} - 1}
+            \]
+            }
+        }
+    }
+
+    \only<10->{
+        \begin{itemize}
+            \item<10-> $\forall j \in \N^{+}_0: \, Kx_j(t) = \mu_j y_j(t)$
+            \item<11->\((\mu_j)\) is a \emph{decreasing} sequence
+            \item<12->\(\left\{ (f_j)_{j \in \N_0^{+}}  \right\}_{\lambda}= \left\{ \left(\sqrt{\frac{2}{\pi}}
+                \sin(jt)\right)_{j \in \N_0^{+}}\right\}_{\lambda}\) is \emph{complete} in \(L^{2}\)
+            \item<13->\(\left< f_j, f_k \right> \neq 0 \Leftrightarrow k = j\), i.e. \((f_j)\) is an \emph{orthogonal}
+                basis of \(L^2\)
+            \item<14-> \textcolor{gray}{\(\forall j \in \N_0^{+}: \, \|f_j\|_{L^{2}} = 1\), i.e. \((f_j)\) is an
+                    \emph{orthonormal} basis of \(L^2\)}
+        \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Task 2: Matrix Implementation and SVD}
+    \only<1>{
+        \begin{task}
+            Consider the implementation of $K$ by matrix $A \in \mathbb{R}^{M \times M}$ for $T = 0.05$. Compute the SVD of
+            $A$. Compare in a plot the singular values of $K$ and $A$, and in a separate plot, the singular vectors for $A$ to
+            the singular functions for $K$. Show by a numerical experiment that $Kx_j = \mu_j y_j$ for $j = 2, 4, 8$.
+        \end{task}
+    }
+
+    \only<2>{
+        \begin{itemize}
+            \item Matrix implementation:
+            \[
+                A_{ij}^{M,N} = \frac{2}{M} \sum_{n = 1}^{N} e^{-Tn^2} \sin \left( i\frac{n}{M} \right) \sin \left( j\frac{n}{M} \right)
+            \]
+        \end{itemize}
+    }
+
+    \only<3>{
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.8\textwidth]{fig_singular_values_slides.pdf}
+            \caption{Comparison of the singular values}
+        \end{figure}
+    }
+
+    \only<4>{
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.8\textwidth]{fig_singular_vectors_slides.pdf}
+            \caption{
+                Comparison of the singular functions of the operator \(K\) and singular vectors of the quadrature
+                approximation matrix \(A\).
+            }
+        \end{figure}
+    }
+
+    \only<5>{
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.8\textwidth]{fig_singular_demo_slides.pdf}
+                \caption{Numerical demonstration of the validity of \(A\) by comparison of \(Kx_j = \mu_jy_j\) and
+                \(Ax_j\) for \(j \in \left\{ 2, 4, 6 \right\}\).}
+        \end{figure}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Task 3: Matrix Implementation and SVD}
+    \only<1>{
+        \begin{task}
+    Fix the function
+    \[
+        x(s) = s \sin(s) \exp((s - \pi/2)^2).
+    \] 
+    Plot the functions $x$ and $y = Kx$. Perturb $y$ by adding Gaussian noise $n$ of
+        relative size $\|n\|_{L^2(0,\pi)}/\|y\|_{L^2(0,\pi)} = 2\%$ to obtain $y^\delta$, and make a Picard plot of the
+        singular values $\mu_j$, the expansion coefficients $|(y^\delta, y_j)|$ and the reconstruction coefficients
+        $|(y^\delta, y_j)|/\mu_j$.
+        \end{task}
+    }
+
+    \only<2>{
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.8\textwidth]{fig_fixed_function_noised_slides.pdf}
+                \caption{The fixed function \(x\) and its projection under operator \(K\) (approximated by
+                \(A\)) with added noise of relative size \(2\%\)}
+        \end{figure}
+    }
+
+    \only<3>{
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.8\textwidth]{fig_picard_plot_slides.pdf}
+                \caption{Picard plot of the fixed function \(x\) the singular values and the
+                reconstruction coefficients.}
+        \end{figure}
+    }
+\end{frame}
+
+\section{Abel Problem}%
+\label{sec:abel-problem}
+
+\begin{frame}
+    \begin{problem}[Inverse of the Abel Problem]
+     Abel problem operator on \(L^2(0,1)\)
+    \[
+        Kx(t) = \int_0^1 k(t, s)x(s)ds, \quad k(t, s) = \begin{cases} \frac{1}{\sqrt{t-s}}, & s < t \\ 0, & s > t \end{cases}
+    \]
+    \end{problem}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Task 1 \& 2: Regularization}
+
+    \only<1>{\begin{task}
+      
+With discretized matrix $A$ with uniform $n = 1000$ point meshes. 
+Fix the function
+    \[
+    x(s) = s^2 - \cos(2\pi s).
+    \] 
+
+Discretize the function $x$ by a vector $x$, compute $y = Ax$ and add Gaussian noise of relative size $\delta = 10\%$ to
+    obtain $y^\delta$
+
+        \begin{enumerate}
+            \item[(a)] Compute the TSVD approximation $x_k$ for well chosen values in $k \in [1, 100]$. Create a plot of
+                reconstructions, and compare it to the ground truth $(x)$ via a plot of the relative error $\|x
+                - x_k\|/\|x\|_2$.
+            \item[(b)] Compute Tikhonov solutions $x_\alpha$ for well chosen regularization parameters $\alpha \in (10^{-4}, 10)$.
+                Plot solutions and compare to TSVD.
+        \end{enumerate}
+\end{task}}
+
+    \only<2>{\begin{figure}
+        \includegraphics[width=\textwidth]{fig_abel_intro_slides.pdf}
+\end{figure}
+}
+
+    \only<3>{\begin{figure}
+        \includegraphics[width=0.8\textwidth]{fig_abel_TSVD_slides.pdf}
+        \caption{
+            TSVD regularized solutions
+        }
+\end{figure}
+}
+
+    \only<4>{\begin{figure}
+        \includegraphics[width=0.8\textwidth]{fig_abel_TSVD_relative_err_slides.pdf}
+        \caption{
+            Relative error of the TSVD regularized solution 
+        }
+\end{figure}
+}
+
+    \only<5>{\begin{figure}
+        \includegraphics[width=0.8\textwidth]{fig_abel_Tikhonov_slides.pdf}
+        \caption{
+            Tikhonov regularized solutions
+        }
+\end{figure}
+
+}
+
+    \only<6>{\begin{figure}
+        \includegraphics[width=0.8\textwidth]{fig_abel_Tikhonov_relative_err_slides.pdf}
+        \caption{
+            Relative error of the Tikhonov regularized solution 
+        }
+\end{figure}
+}
+
+    \only<7>{\begin{figure}
+        \includegraphics[width=0.8\textwidth]{fig_abel_compare_slides.pdf}
+        \caption{
+            Comparison of the best TSVD and Tikhonov regularized solutions
+        }
+\end{figure}
+}
+
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Task 3: Discontinuous case}
+
+    \only<1>{\begin{task}
+Try the above with a discontinuous function $x$.
+            \[
+        x(s) = \begin{cases}
+            -s^2 - \cos(2\pi s) & x > 0.5 \\
+            s^2 - \cos(2\pi s) & x \le 0.5
+        \end{cases}
+            \] 
+\end{task}}
+
+    \only<2>{\begin{figure}
+        \includegraphics[width=\textwidth]{fig_abel_discont_intro_slides.pdf}
+\end{figure}
+}
+
+    \only<3>{\begin{figure}
+        \includegraphics[width=0.8\textwidth]{fig_abel_discont_TSVD_slides.pdf}
+        \caption{
+            TSVD regularized solutions
+        }
+\end{figure}
+}
+
+    \only<4>{\begin{figure}
+        \includegraphics[width=0.8\textwidth]{fig_abel_discont_TSVD_relative_err_slides.pdf}
+        \caption{
+            Relative error of the TSVD regularized solution 
+        }
+\end{figure}
+}
+
+    \only<5>{\begin{figure}
+        \includegraphics[width=0.8\textwidth]{fig_abel_discont_Tikhonov_slides.pdf}
+        \caption{
+            Tikhonov regularized solutions
+        }
+\end{figure}
+
+}
+
+    \only<6>{\begin{figure}
+        \includegraphics[width=0.8\textwidth]{fig_abel_discont_Tikhonov_relative_err_slides.pdf}
+        \caption{
+            Relative error of the Tikhonov regularized solution 
+        }
+\end{figure}
+}
+
+    \only<7>{\begin{figure}
+        \includegraphics[width=0.8\textwidth]{fig_abel_discont_compare_slides.pdf}
+        \caption{
+            Comparison of the best TSVD and Tikhonov regularized solutions
+        }
+\end{figure}
+}
+\end{frame}
+
+\section{Deblurring}%
+\label{sec:deblurring}
+
+\begin{frame}
+    \begin{problem}[Deblurring Model]
+     Deblurring model operator on $L^2(-6, 6)$
+    \[
+        Kx(t) = \int_{-6}^6 k(t-s)x(s)ds, \quad k(z) = \begin{cases}
+        1 + \cos(\pi z/3), & |z| < 3, \\
+        0, & |z| \geq 3.
+        \end{cases}
+    \]
+    \end{problem}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Task 1: Convergence of Tikhonov Regularization}
+    \begin{task}
+        Show that $\lim_{\alpha \to 0} x_\alpha = x$ for the Tikhonov regularization operator
+        \[
+            x_\alpha = R_\alpha y = \sum_j \frac{\mu_j}{\mu_j^2 + \alpha} (y, y_j)x_j.
+        \]
+    \end{task}
+
+    \begin{itemize}
+        \item<2> \textcolor{gray}{In the report}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Task 2: Numerical Demonstration}
+    \only<1>{
+        \begin{task}
+            Choose $\alpha(\delta)$ such that
+            \[
+                \lim_{\delta \to 0} \alpha(\delta) = 0, \quad \lim_{\delta \to 0}\frac{\delta^2}{\alpha(\delta)} = 0
+            \]
+            and demonstrate numerically that $\lim_{\delta \to 0} \|R_{\alpha(\delta)}y^\delta - x\| = 0$.
+        \end{task}
+    }
+
+    \only<2-4>{
+        \begin{itemize}
+            \item<2-> Deblurring model given by    \[
+        k(z) = \begin{cases}
+        1 + \cos(\pi z/3), & |z| < 3, \\
+        0, & |z| \geq 3.
+        \end{cases}
+    \] 
+    as a convolution $K$ in $L^2(-6, 6)$ defined as
+    \[
+    Kx(t) = \int_{-6}^6 k(t-s)x(s)ds
+    \] 
+            \item<3-> Fixed function:
+            \[
+                x(s) = e^{-15(s - 0.6)^2} \sin(7\pi s)^6 s^2 (3-s)
+            \]
+        \item<4> Choice of \(\alpha(\delta) = \delta\)
+        \end{itemize}
+    }
+
+    \only<5>{
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.8\textwidth]{fig_limit_demo_slides.pdf}
+            \caption{Reconstructions with different values of $\alpha(\delta)$}
+        \end{figure}
+    }
+
+    \only<6>{
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.8\textwidth]{fig_numerical_limit_slides.pdf}
+            \caption{Relative error vs $\delta$ for $\alpha(\delta) = \delta$}
+        \end{figure}
+    }
+\end{frame}
+\end{document}

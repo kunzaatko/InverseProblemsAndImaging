@@ -1,0 +1,19 @@
+[doc]
+name = "HW_2"
+bundle = "https://data1.fullyjustified.net/tlextras-2022.0r0.tar"
+
+[[output]]
+name = "HW_2_Martin_Kunz"
+preamble = "report/_preamble.tex"
+postamble = "report/_postamble.tex"
+index = "report/index.tex"
+type = "pdf"
+shell_escape_cwd = "./shell-escape"
+
+
+[[output]]
+name = "Exam_slides_2_Martin_Kunz"
+preamble = "slides/_preamble.tex"
+postamble = "slides/_postamble.tex"
+index = "slides/index.tex"
+type = "pdf"

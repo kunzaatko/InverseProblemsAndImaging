@@ -1,0 +1,263 @@
+\frame{\titlepage}
+
+\section{Heat Equation}%
+\label{sec:heat-equation}
+
+\begin{frame}
+    \begin{problem}[2D Heat Equation]
+     The 2D heat problem on $(0,\pi)^2$ with homogeneous Dirichlet boundary conditions:
+    \[
+        Kx(t_1,t_2) = \int_0^\pi \int_0^\pi k(t_1,t_2,s_1,s_2)x(s_1,s_2)\odif{s_1}\odif{s_2}
+    \]
+    with kernel
+    \[
+        k(t_1,t_2,s_1,s_2) = \sum_{n,m} e^{-(n^2+m^2)T}\sin(ns_1)\sin(ms_2)\sin(nt_1)\sin(mt_2)
+    \]
+    \end{problem}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Task 1: Ill-posedness}
+    \begin{task}
+        Describe why the 2D backwards heat equation is ill-posed.
+    \end{task}
+
+    \only<2>{
+        \begin{itemize}
+            \item Problem lies in stability
+            \item Heat operator acts as a smoothing operator
+            \item Information loss in forward operation (operator norm < 1)
+            \item Small perturbations lead to large errors in reconstruction
+            \item Violates Hadamard's stability condition
+        \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Task 2: FFT Implementation}
+    \only<1-2>{   \begin{task}
+        Implement numerically using FFT the operator $K$ and show it works on $x(s_1,s_2) = \sin(ks_1)\sin(ls_2)$.
+\end{task}}
+
+    \only<2>{
+        \begin{itemize}
+            \item Implementation in Julia using FFT
+            \item Key steps:
+                \begin{itemize}
+                    \item Pad array for periodicity
+                    \item Apply FFT
+                    \item Multiply by exponential factor
+                    \item Apply inverse FFT
+                \end{itemize}
+        \end{itemize}
+    }
+
+    \only<3>{
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.8\textwidth]{fig_initial_condition.pdf}
+            \caption{Initial function $x(4,3)$}
+        \end{figure}
+    }
+
+    \only<4>{
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.8\textwidth]{fig_forward_solution.pdf}
+            \caption{Solution $K(x(4,3))$ with $T = 0.02$}
+        \end{figure}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Task 3: Image Processing}
+    \only<1>{\begin{task}
+        Process Karin Harbo image through heat equation with noise.
+\end{task}}
+
+    \only<2>{
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.6\textwidth]{fig_karin_harbo.pdf}
+            \caption{Original image field $x$}
+        \end{figure}
+    }
+
+    \only<3>{
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.6\textwidth]{fig_karin_harbo_forward.pdf}
+            \caption{Forward passed image $Kx = y$}
+        \end{figure}
+    }
+
+    \only<4>{
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.6\textwidth]{fig_karin_harbo_forward_noisy.pdf}
+            \caption{Forward passed image with \(10\%\) noise $y^\delta$}
+        \end{figure}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Task 4: Landweber Iteration}
+    \only<1-3>{    \begin{task}
+        Show that $K$ is self-adjoint and solve using Landweber iteration.
+\end{task}}
+
+    \only<2>{
+        \begin{itemize}
+            \item Self-adjoint proof:
+            \begin{itemize}
+                \item Need to show $k(t_1,t_2,s_1,s_2) = k(s_1,s_2,t_1,t_2)$
+                \item Evident from kernel formula
+            \end{itemize}
+        \end{itemize}
+    }
+
+    \only<3>{
+        \begin{itemize}
+            \item Landweber iteration:
+            \[
+                x^{(k+1)} = x^{(k)} + K(y^\delta - K(x^{(k)}))
+            \]
+            \item Convergence guaranteed as $\|K\| \leq 1$
+        \end{itemize}
+    }
+
+    \only<4>{
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.6\textwidth]{fig_landweber_reconstruction.pdf}
+            \caption{Landweber reconstruction after 500 iterations}
+        \end{figure}
+    }
+
+    \only<5>{
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.8\textwidth]{fig_landweber_intermediates.pdf}
+            \caption{Intermediate results with relative errors}
+        \end{figure}
+    }
+\end{frame}
+
+\section{Abel Problem}%
+\label{sec:abel-problem}
+
+\begin{frame}
+    \only<1>{\begin{problem}[Abel Problem]
+        Consider Abel problem for $x(s) = 1/2$, $y(t) = \sqrt{t}$
+        \begin{itemize}
+            \item Discretize $K$ by matrix $A \in \mathbb{R}^{256\times 256}$
+            \item Add 10\% random noise to get $y^\delta$
+            \item Use finite difference matrix $L_1$ for derivative approximation
+        \end{itemize}
+\end{problem}}
+
+    \only<2>{
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.8\textwidth]{fig_abel.pdf}
+            \caption{True solution $y$, forward solution $Kx$ and noisy $y^\delta$}
+        \end{figure}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Task 1 \& 2: $H^1$ Space and Uniqueness}
+    \only<1>{
+    \begin{task}
+        Show $x \in H^1(0,\pi)$ and uniqueness of solution for
+        \[
+            x_\alpha = \argmin_x \|Ax-y^\delta\|^2_2 + \alpha(\|x\|^2_2 + \|L_1x\|^2_2)
+        \]
+\end{task}}
+
+    \only<2>{
+        \begin{itemize}
+            \item $x \in H^1(0,\pi)$ because:
+            \begin{itemize}
+                \item $x \in L^2(0,\pi)$ (bounded function, bounded domain)
+                \item Weak derivative $x' \in L^2(0,\pi)$ (constant function)
+            \end{itemize}
+        \end{itemize}
+    }
+
+    \only<3>{
+        \begin{itemize}
+            \item Uniqueness proof:
+            \begin{itemize}
+                \item Rewrite as least squares problem
+                \item Show matrix $R = \begin{pmatrix} A \\ \sqrt{\alpha}L \end{pmatrix}$ has full column rank
+            \end{itemize}
+        \end{itemize}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Task 3: Tikhonov Regularization}
+    \begin{task}
+        Find solution to ordinary Tikhonov problem using discrepancy principle.
+    \end{task}
+
+    \only<2>{
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.8\textwidth]{fig_discrepancy_tikhonov.pdf}
+            \caption{$F(\alpha)$ from discrepancy principle}
+        \end{figure}
+    }
+
+    \only<3>{
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.8\textwidth]{fig_abel_tikhonov.pdf}
+            \caption{Solution with $\alpha = 8.53 \times 10^{-4}$}
+        \end{figure}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Task 4: Sobolev Regularization}
+    \begin{task}
+        Find solution with $H^1$ regularization and compare.
+    \end{task}
+
+    \only<2>{
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.8\textwidth]{fig_discrepancy_sobolev.pdf}
+            \caption{$F(\alpha)$ for Sobolev regularization}
+        \end{figure}
+    }
+
+    \only<3>{
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.8\textwidth]{fig_abel_sobolev.pdf}
+            \caption{Solution with $\alpha = 2.68 \times 10^{-4}$}
+        \end{figure}
+    }
+
+    \only<4>{
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.8\textwidth]{fig_comparison_tikhonov_sobolev.pdf}
+            \caption{Comparison of both regularization approaches}
+        \end{figure}
+    }
+
+    \only<5>{
+        Key observations:
+        \begin{itemize}
+            \item Tikhonov not ideal for non-zero sum solutions
+            \item Discrepancy principle may not be optimal for large noise
+            \item $\|x\| \gg \|L_1x\|$ leads to similar solutions
+        \end{itemize}
+    }
+\end{frame}
+
+\end{document}
+

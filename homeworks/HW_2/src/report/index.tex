@@ -1,0 +1,413 @@
+\section{Heat Equation}%
+\label{sec:heat-equation}
+
+The 2D heat problem on $(0,\pi)^2$ with homogeneous Dirichlet boundary conditions has the forward operator
+    \[
+        Kx(t_1,t_2) = \int_0^\pi \int_0^\pi k(t_1,t_2,s_1,s_2)x(s_1,s_2)\odif{s_1}\odif{s_2}
+    \]
+with the kernel
+    \[
+        k(t_1,t_2,s_1,s_2) = \sum_{n,m} e^{-(n^2+m^2)T}\sin(ns_1)\sin(ms_2)\sin(nt_1)\sin(mt_2).
+    \]
+It takes as input the image $x(s_1,s_2)$ as initial condition and outputs the heat distribution at time $T$, $y(t_1,t_2)
+    = Kx(t_1,t_2)$.
+
+\begin{enumerate}[label = (\alph*)]
+    \item Describe in an essay text (max 10 lines) why the 2D backwards heat equation is ill-posed.
+\end{enumerate}
+
+\nopagebreak
+\noindent\hrulefill
+
+For a problem to satisfy Hadamard's well-posedness, it must meet three conditions.
+These are the \emph{existence} and \emph{uniqueness} of the solution and the \emph{stability} of the problem.
+The first two are trivially true for the exact heat equation.
+Problem in the well-posedness of the 2D backwards heat equation lies in its stability.
+Let us consider a positive error function that is corrupting our measurement of the end temperature.
+The forward heat operator acts inherently as a sort of smoothing operator on the function that is at its input due to it
+    being a parabolic partial differential equation problem.
+This fact can be also realised by considering the growth in entropy that is instructed by the second law of
+    thermodynamics.
+Thus if we should invert the problem, we have to go from a smoothed function to a function that is more rigged and this
+    leads to the problem with the stability of the backwards heat equation.
+From another point of view, the operator norm is smaller than \(1\) hence there is intuitively some information loss
+    about the original function caused by the forward operator.
+Due to these aspects of the problem an arbitrarily small perturbation in the measurement temperatures may lead to
+    arbitrarily large errors in the reconstructed initial temperatures.
+
+\nopagebreak
+\noindent\hrulefill
+
+\begin{enumerate}[resume, label = (\alph*)]
+    \item Implement numerically using FFT the operator $K$ as a Matlab/Python/Julia... function that takes as input
+        an $N$ by $N$ matrix $x$ of sampled values of the function $x$ and returns an $N$ by $N$ matrix $y$
+        approximation $y(t_1,t_2)$. Show that the function acts correct on $x(s_1,s_2) = \sin(ks_1)\sin(ls_2)$.
+\end{enumerate}
+
+\nopagebreak
+\noindent\hrulefill
+
+\begin{figure}
+    \centering
+    \begin{minted}[breaklines,escapeinside=||,mathescape=true, numbersep=3pt, gobble=2, frame=single,
+        fontsize=\fontsize{10pt}{13pt}\selectfont, framesep=2mm]{julia1}
+"""
+# Arguments
+- `f₀` -- initial condition
+- `T` -- terminal time
+"""
+function heat_forward(f₀::Matrix{NT}; T::NT=0.001)::Matrix{NT} where {NT <: Number}
+    @assert size(f₀, 1) == size(f₀, 2) "Expected a N×N square matrix, got $(size(f₀))"
+    Nx,Ny = size(f₀)
+    Kx,Ky = fftshift.((-Nx:(Nx - 1), -Ny:(Ny - 1)))
+    Kx,Ky = ndgrid(Kx,Ky)
+    f₀_crop = parent(padarray(f₀[2:(end-1), 2:(end-1)], Fill(zero(eltype(f₀)), (1,1), (1,1))))
+    f₀_ext = [f₀_crop reverse(f₀_crop, dims=1);
+            -1 .* reverse(f₀_crop, dims=2) -1 .* reverse(f₀_crop)]
+    x̂ = fft(f₀_ext)
+    x̂ .*= @. exp(-(Kx^2 + Ky^2) * T)
+    y = ifft(x̂)
+    y = real(y[1:Nx, 1:Ny])
+    return y
+end
+    \end{minted} 
+    \caption{A \emph{Julia} implementation of the 2D forward heatoperator using FFT. The used packages are \texttt{LazyGrids.jl},
+        \texttt{ImageFiltering.jl} (for the \texttt{padarray} function) and \texttt{FFTW.jl}.}
+    \label{fig:julia-implementation}
+\end{figure}
+
+The \emph{Julia} implementation of the operator is in \cref{fig:julia-implementation}.
+
+The exact analytical solution of the  \(Kx\) when \(x(s_1, s_2) = \sin(ks_1) \sin(ks_2)\) is \[
+    y(t_1, t_2) = e^{-2T^2} \sin(ks_1) \sin(ks_2),
+    \] thus it should effectively only lower the modes of the harmonics since the sine functions are eigenfunctions for the
+    operator.
+
+A test of the implementation is made using the harmonic eigenfunctions in \cref{fig:test-heat-fft}.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width = \textwidth]{fig_initial_condition.pdf}
+        \caption{The initial function \(x(4,3)\).}
+        \label{fig:initial-heat}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width = \textwidth]{fig_forward_solution.pdf}
+        \caption{Solution of the forward heat equation \(K(x(4,3))\) with the terminal time \(T = 0.02\).}
+        \label{fig:forward-heat}
+    \end{subfigure}
+    \caption{A test of the implementation of the FFT forward heat equation operator using harmonic eigenfunctions.}
+    \label{fig:test-heat-fft}
+\end{figure}
+
+\nopagebreak
+\noindent\hrulefill
+
+\begin{enumerate}[resume, label = (\alph*)]
+    \item Download the image \texttt{KarinHarbo.jpg} and create from pixels in the image a 512 by 512 matrix $x$. Fix $T
+        = 0.001$ and compute $y = Kx$. Add random Gaussian noise to $y$ of magnitude $\delta = 0.01$ to find
+        $y^\delta$. Display $y^\delta$.
+\end{enumerate}
+
+\nopagebreak
+\noindent\hrulefill
+
+The field created from the image (\cref{fig:karin-harbo-field}), forward passed image (\cref{fig:karin-harbo-forward})
+    and the forward passed image with the added noise (\cref{fig:karin-harbo-noisy}).
+The image was converted to grayscale, resized to \(512\times 512\) pixels and the edges where mirrored to generate
+    a border of \(30\) pixels around all of the image borders and tapered by the cosine apodization function to ensure
+    that we comply with the condition of the array being periodic\footnote{Edges of the array are gradually (in the span
+    or \(30\) pixels) attenuated to \(0\) at both sides, hence the array concatenated with itself at all the sides is
+    periodic in compliance with the assumptions.} as expected by the FFT algorithm\footnote{This is done to alleviate
+    artifacts that can be caused by the FFT without its assumptions satisfied.}.
+You can see that with this noise level, the added white noise is not even visible in \cref{fig:karin-harbo}.
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width = \textwidth]{fig_karin_harbo.pdf}
+        \caption{Karin Harbo image field \(x\)}
+        \label{fig:karin-harbo-field}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width = \textwidth]{fig_karin_harbo_forward.pdf}
+        \caption{Forward passed Karin Harbo image \(Kx = y\)}
+        \label{fig:karin-harbo-forward}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width = \textwidth]{fig_karin_harbo_forward_noisy.pdf}
+        \caption{Forward passed Karin Harbo image with added noise of magnitude \(10\%\), \(y^{\delta}\)}
+        \label{fig:karin-harbo-noisy}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width = \textwidth]{fig_landweber_reconstruction.pdf}
+        \caption{Reconstruction of the Karin Harbo image from the heated and noisy \(y^{\delta}\) using the Landweber
+        iterations with the relaxation parameter \(\omega = 1\) and \(500\) iterations}
+        \label{fig:karin-harbo-landweber}
+    \end{subfigure}
+    \caption{Karin Harbo original image, forward passed and with added noise.}
+    \label{fig:karin-harbo}
+\end{figure}
+    
+\nopagebreak
+\noindent\hrulefill
+
+\begin{enumerate}[resume, label = (\alph*)]
+    \item Show that $K$ is self-adjoint. Solve the inverse problem using the Landweber iteration (take 500 iterations).
+\end{enumerate}
+
+\nopagebreak
+\noindent\hrulefill
+
+\paragraph{Self-adjoint:}%
+\label{par:self-adjoint}
+
+An operator is self-adjoint if \[
+    \langle Ku, v \rangle = \langle u, Kv \rangle, \quad \forall x,y \in L^2(\Omega).
+\] 
+In our case, we have \(\Omega = \left(0, \pi  \right)^2\).
+We can write the first inner product as \[
+    \langle Ku, v \rangle = \iint_{\left(0, \pi  \right)^2} \overline{v(t_1, t_2)} \iint_{\left(0, \pi  \right)^2}
+    k(t_1, t_2, s_1, s_2) u(s_1, s_2) \odif{{ (s_1,s_2) }}\odif{{ (t_1,t_2) }},
+\] and similarly \[
+    \langle u, Kv \rangle = \iint_{\left(0, \pi  \right)^2} \overline{u(s_1, s_2)} \iint_{\left(0, \pi  \right)^2}
+    k(s_1, s_2,t_1, t_2) v(t_1, t_2) \odif{{ (t_1,t_2) }}\odif{{ (s_1,s_2) }}.
+\] 
+
+First of all, we are dealing only with real functions hence we can drop the conjucations.
+Now we see that for these to be equal, we only need to check that the kernel \(k\) is symmetric, that is \[
+    k(t_1, t_2, s_1, s_2) = k(s_1, s_2, t_1, t_2).
+\] 
+
+For the kernel \[
+    k(t_1,t_2,s_1,s_2) = \sum_{n,m} e^{-(n^2+m^2)T}\sin(ns_1)\sin(ms_2)\sin(nt_1)\sin(mt_2),
+\] we immediately see that this is true so the operator is self-adjoint.
+
+\paragraph{Landweber iteration:}%
+\label{par:landweber-iteration}
+
+Landweber iteration is a method for sequentially approximating the inverse problem solution. We start with \(x^{(0)}
+    \equiv 0 \) and iterate using the prescription
+    \[
+        x^{\left(k+1  \right)} = x^{\left(k  \right)} + \omega K^{*}\left(y^{\delta} - K(x^{\left(k  \right)})  \right),
+    \] where \(\omega\) is the relaxation parameter of the method.
+For \(|\omega| < 1/\|K^{*}K\|\) we have a guarantee of convergence.
+Since for the heat operator it holds that \(\|K\| \le 1\), we can drop this parameter and the convergence is
+    guaranteed\footnote{However the convergence rate is not necessarily fast.}.
+
+From the paragraph \ref{par:self-adjoint} above we know that the operator is self-adjoint so the method changes to \[
+        x^{\left(k+1  \right)} = x^{\left(k  \right)} + K\left(y^{\delta} - K(x^{\left(k  \right)})  \right).
+\] 
+
+You can see the Landweber reconstruction of the Karin Harbo image in \cref{fig:karin-harbo-landweber}.
+The intermediate results of the iteration are visible in \cref{fig:karin-harbo-landweber-intermediate}.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\textwidth]{fig_landweber_intermediates.pdf}
+  \caption{Intermediate results of the Landweber reconstruction of the Karin Harbo image along with the change in
+    relative error from the previous logged iteration. The rate of convergence slowes down significantly after the first
+    few iterations as can be expected.}
+  \label{fig:karin-harbo-landweber-intermediate}
+\end{figure}
+
+\nopagebreak
+\noindent\hrulefill
+
+\section{Abel Problem}%
+\label{sec:abel-problem}
+
+Consider the Abel problem for $x(s) = 1/2$, $y(t) = \sqrt{t}$. Discretize $K$ by a matrix $A \in \mathbb{R}^{256\times
+    256}$ and discretize similarly $x(s)$, $y(t)$ by $x,y \in \mathbb{R}^{256}$. Add random noise of magnitude 10\% to
+        $y$ to get $y^\delta$. Denote by $L_1$ a finite difference matrix approximating the derivative.
+
+\nopagebreak
+\noindent\hrulefill
+
+A plot of the objects from the Abel problem is in \cref{fig:abel-init}.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\textwidth]{fig_abel.pdf}
+  \caption{The true solution \(y\), forward solution \(Kx\) and the noisy \(y^\delta\).}
+  \label{fig:abel-init}
+\end{figure}
+
+\nopagebreak
+\noindent\hrulefill
+
+\begin{enumerate}[label = (\alph*)]
+    \item Show that $x \in H^1(0,\pi)$. Thus it makes sense to apply $H^1$ regularization.
+\end{enumerate}
+
+\nopagebreak
+\noindent\hrulefill
+
+In order for \(x\) to belong to the Sobolev space \(H^{1}\left(0,\pi  \right)\), we need to check the it belongs to
+    \(L^2(0,\pi)\), which is evident due to the boundedness of both the function \(x\) and the integration set. 
+Additionally we need to check that the weak derivative \(x' \in L^2(0, \pi)\), which is also evident since it has the
+    strong derivative equal to \(0\).
+
+\nopagebreak
+\noindent\hrulefill
+
+
+\begin{enumerate}[resume, label = (\alph*)]
+    \item We approximate the $H^1$-norm by $\|x\|^2_2 + \|L_1x\|^2_2$. 
+
+    Show that the problem
+        \begin{equation}
+            \label{eq:abel-tikhonov}
+            x_\alpha = \argmin_x \|Ax-y^\delta\|^2_2 + \alpha(\|x\|^2_2 + \|L_1x\|^2_2)
+        \end{equation}
+    has a unique solution for any $\alpha > 0$.
+\end{enumerate}
+
+\nopagebreak
+\noindent\hrulefill
+
+We can write the solution of \(x_\alpha\) equivalently as \[
+    x_\alpha = \argmin_x \left\| \begin{pmatrix}
+        A \\ \sqrt{\alpha} L 
+    \end{pmatrix} x - \begin{pmatrix}
+        y^\delta \\ 0
+    \end{pmatrix} \right\|_2,
+\]  similarly to the Tikhonov solution.
+Here the matrix \(L\) is now composed from the Sobolev discretized regularization matrix \( L_\text{Tikhonov} = I \)
+and the approximating matrix of the derivative \(L_1\) by concatenating them vertically as \[
+    L = \begin{pmatrix}
+        L_\text{Tikhonov} \\ L_1
+    \end{pmatrix}.
+\] 
+Now this is a least squares problem that can be solved as \[
+    x_\alpha = y^{\delta} \backslash R \quad \text{where} \quad R = \begin{pmatrix}
+        A \\ \sqrt{\alpha}L
+    \end{pmatrix}.
+\] 
+This problem has a unique solution if the matrix \(R\) has full column rank, which it obviously has.
+
+\nopagebreak
+\noindent\hrulefill
+    
+\begin{enumerate}[resume, label = (\alph*)]
+    \item Find the solution to the ordinary Tikhonov problem (without $L_1$) with $\alpha$ obtained by the discrepancy
+        principle.
+\end{enumerate}
+
+\nopagebreak
+\noindent\hrulefill
+
+The discrepancy principle states that there is a unique \(\alpha\) for which \(F(\alpha) \coloneqq \| K x_\alpha
+- y^{\delta}\| = \delta\) and this \(\alpha\) is admissible, i.e. \(\lim_{\delta \to 0} x_\alpha = x\).
+
+We find the \(\alpha\) from the discrepancy by evaluating \(F\) at various \(\alpha\) and solving the equation
+    \(F(\alpha) = \delta\) numerically by the optimization of \(|F(\alpha) - \delta|\).
+A graph showing \(F\) dependency on \(\alpha\) is in \cref{fig:discrepancy-tikhonov}.
+\(\alpha\) chosen by the discrepancy principle turns out to be \(8.529966\times {10}^{-4}\).
+For this \(\alpha\) the regularized solution is is in \cref{fig:abel-tikhonov-solution}.
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[t]{\textwidth}
+    \includegraphics[width=\textwidth]{fig_discrepancy_tikhonov.pdf}
+    \caption{\(F(\alpha)\) from the discrepancy for the Tikhonov regularization.}
+    \label{fig:discrepancy-tikhonov}
+  \end{subfigure}
+  \begin{subfigure}[t]{\textwidth}
+    \includegraphics[width=\textwidth]{fig_abel_tikhonov.pdf}
+    \caption{The solution of the Tikhonov regularized inverse problem using the \(\alpha\) chosen by the discrepancy
+        principle.}
+    \label{fig:abel-tikhonov-solution}
+  \end{subfigure}
+  \caption{Tikhonov approach to the regularization of the Abel problem.}
+  \label{fig:abel-tikhonov}
+\end{figure}
+
+\nopagebreak
+\noindent\hrulefill
+    
+\begin{enumerate}[resume, label = (\alph*)]
+    \item Find the solution to the problem in \cref{eq:abel-tikhonov}, again choosing $\alpha$ by the discrepancy
+        principle. Compare this solution to the previous without $L_1$.
+\end{enumerate}
+
+We find the \(\alpha\) from the discrepancy principle analogously to the previous case.
+Now the \(\alpha\) chosen by the discrepancy is \(2.682426\times 10^{-4}\).
+Both the solution and the dependency of \(F\) on \(\alpha\) are shown in \cref{fig:abel-sobolev}.
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[t]{\textwidth}
+    \includegraphics[width=\textwidth]{fig_discrepancy_sobolev.pdf}
+    \caption{\(F(\alpha)\) from the discrepancy for the Sobolev regularization.}
+    \label{fig:discrepancy-sobolev}
+  \end{subfigure}
+  \begin{subfigure}[t]{\textwidth}
+    \includegraphics[width=\textwidth]{fig_abel_sobolev.pdf}
+    \caption{The solution of the Sobolev regularized inverse problem using the \(\alpha\) chosen by the discrepancy
+        principle.}
+    \label{fig:abel-sobolev-solution}
+  \end{subfigure}
+  \caption{Sobolev approach to the regularization of the Abel problem.}
+  \label{fig:abel-sobolev}
+\end{figure}
+
+A comparison of the solution for the Tikhonov and the Sobolev regularization is in \cref{fig:abel-comparison}.
+
+The results point to three problems,
+\begin{enumerate}[label = \roman*)]
+    \item The Tikhonov regularization is not appropriate for the Abel problem when we expect that sum of the solution is
+        not close to \(0\).
+    \item Despite the admissibility of the \(\alpha\) chosen by the discrepancy principle, it is not guaranteed that for
+        a noise power that is not close to \(0\) the parameter is chosen optimally.
+    \item Since \(\|x\|\) is expected to be much greater than \(\|L_1 x\|\), the Sobolev norm is mainly lead by the
+        ordinary \(L_2\) norm, hence the similarity in the two solutions visible from the comparison in
+        \cref{fig:abel-comparison}.
+\end{enumerate}
+    
+\begin{figure}
+  \centering
+  \begin{subfigure}[t]{\textwidth}
+    \includegraphics[width=\textwidth]{fig_diff_tikhonov_sobolev.pdf}
+    \caption{The difference of the two solutions using different regularizations.}
+    \label{fig:diff-tikhonov-sobolev}
+  \end{subfigure}
+  \begin{subfigure}[t]{\textwidth}
+    \includegraphics[width=\textwidth]{fig_comparison_tikhonov_sobolev.pdf}
+    \caption{Comparison of the solutions using the Tikhonov regularization \(x_{\alpha}\) and the Sobolev regularization
+    \(x_{\alpha}^{(L_2, L_1)}\)}
+    \label{fig:comparison-tikhonov-sobolev}
+  \end{subfigure}
+  \caption{A comparison of both approaches to the regularization of the Abel problem using the parameters \(\alpha\)
+    determined by the discrepancy principle.}
+  \label{fig:abel-comparison}
+\end{figure}
+
+Additionally I tried to use only the second term from the Sobolev norm (which is in theory similar to the total
+    variation) for the regularization i.e. finding \[
+    x_{\alpha}^{(L_1)} = \argmin_{x} \|A x - y^{\delta}\|_2^2 + \alpha \|L_1 x\|_2^2.
+\] 
+Since we are looking for \(x\) that has a derivative of \(0\) throughout the whole domain, this should be an ideal
+    regularization.
+Using \(\alpha\) chosen by the discrepancy principle (\(\alpha = 3.689282 \times 10^{-4}\)) does not work very well, due
+    to the reasons stated above.
+I chose a large \(\alpha\) of  \(0.65\).
+The resulting reconstruction may be seen in \cref{fig:abel-l1}.
+Though it does improve upon the previous approaches, it still contains much to be desired.
+For instance the oscillatory jumps around the solution suggest that the \(L_1\) matrix is not a great fit for estimating
+    the derivative of a noisy function since the noise is not correlated.
+We could improve this by using an approximation matrix derived from a higher order Runge-Kutta method approximation.
+The reason for this theorised improvement is, that more terms will play a role in the estimate and hence the white noise
+    will be partially removed by this term averaging. 
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\textwidth]{fig_abel_l1.pdf}
+  \caption{The solution of the Abel problem using the regularization by the \(L_1\) matrix, \(x_{\alpha}^{(L_1)}\).}
+  \label{fig:abel-l1}
+\end{figure}
+
+\nopagebreak
+\noindent\hrulefill

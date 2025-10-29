@@ -1,0 +1,415 @@
+\section{Heat equation}%
+\label{sec:heat-equation}
+
+Consider the backwards heat equation modelled by the forward operator
+\[
+	Kx(t) = \int_0^\pi x(s)k(t, s)ds \quad k(t, s) = \frac{2}{\pi} \sum_{n=1}^{\infty} e^{-T n^2} \sin(nt) \sin(ns).
+\] 
+
+\begin{enumerate}[label = (\alph*)]
+  \item We know that $K$ is compact in $L^2(0, \pi)$. Show that $K$ has the singular system given by
+\end{enumerate}
+\[
+	x_j(t) = \sqrt{\frac{2}{\pi}} \sin(jt), \quad y_j(s) = \sqrt{\frac{2}{\pi}} \sin(js), \quad \mu_j = e^{-T j^2}.
+\] 
+\hrulefill
+
+We need to show that \[
+    Kx_j(t) = \mu_j y_j(t).
+\] 
+Starting from the definition of the operator 
+\begin{align*}
+    Kx_j(t) 
+    &= \left( \frac{2}{\pi} \right)^{\tfrac{3}{2}} \int_{0}^{\pi} \sin(js) \sum_{n = 1}^{\infty} e^{-Tn^2} \sin(ns) \sin(nt) \odif{s} \\
+    &= \left( \frac{2}{\pi} \right)^{\tfrac{3}{2}} \sum_{n = 1}^{\infty} e^{-Tn^2} \sin(nt) \int_{0}^{\pi}
+    \sin(js)\sin(ns)  \odif{s} \stepcounter{equation}\tag{\theequation}\label{eq:lebesgue-dominating-thm} \\
+    &= \left( \frac{2}{\pi} \right)^{\tfrac{3}{2}} \sum_{n = 1}^{\infty} e^{-Tn^2} \sin(nt) \int_{0}^{\pi}
+    \frac{\cos(ns - js) - \cos(ns + js)}{2}  \odif{s} \\
+    & \begin{multlined}
+      = \left( \frac{2}{\pi} \right)^{\tfrac{3}{2}} \Bigg\{ \frac{e^{-Tj^2}\sin(jt)}{2} \int_{0}^{\pi}
+          \overbrace{\cos(0)}^{= 1}
+          - \cos(2js) \odif{s}  \\[-0.3em]
+           \hspace{2cm} + \sum_{\substack{n = 1 \\ n \neq j}}^{\infty} \frac{e^{-Tn^2}\sin(nt)}{2}
+                    \bigg( \underbrace{\left[  \frac{\sin(ns + js)}{n + j} \right]_0^{\pi}}_{=0} - \underbrace{\left[
+                            \frac{\sin(ns - js)}{n - j}
+                \right]_0^{\pi}}_{ = 0} \bigg) \Bigg\}
+    \end{multlined} \\
+    &= \left( \frac{2}{\pi} \right)^{\tfrac{3}{2}}  \frac{e^{-Tj^2}\sin(jt)}{2} \bigg\{\left[ 1 \right]_0^\pi  - \underbrace{\left[
+    \frac{\sin(2js)}{2j} \right]_0^{\pi}}_{=0} \bigg\} \\[-0.4em]
+    &= \sqrt{\frac{2}{\pi}} \sin(jt) e^{-T j^2}  = \mu_j y_j(t)
+\end{align*}
+where in \cref{eq:lebesgue-dominating-thm} we used the Lebesgue dominated convergence theorem with the integrable
+    envelope function identical for every \(n\)\[
+        g_n(s) = \sum_{n = 1}^{\infty} e^{-Tn^2} \le \sum_{n = 1}^{\infty} e^{-Tn} = \frac{e^{-T}}{1 - e^{-T}}
+        = \frac{1}{e^{T} - 1}
+        \] and the formula 
+        \[
+            2\sin(x)\sin(y) = \cos(x - y) - \cos(x + y).
+    \]
+\((x_j)\), \((y_j)\) are orthonormal systems and \((\mu_j)\) is decreasing with \(j\) which concludes the definition
+    properties, so we can conclude that \(\left\{ (x_j), (\mu_j), (y_j) \right\}\) is a singular system of \(K\).
+
+\nopagebreak
+\noindent\hrulefill
+
+\begin{enumerate}[resume, label=(\alph*)]
+  \item Consider the implementation of $K$ by matrix $A \in \mathbb{R}^{M \times M}$ for $T = 0.05$. Compute the SVD of
+      $A$. Compare in a plot the singular values of $K$ and $A$, and in a separate plot, the singular vectors for $A$ to
+      the singular functions for $K$. Show by a numerical experiment that $Kx_j = \mu_j y_j$ for $j = 2, 4, 8$.
+\end{enumerate}
+
+\nopagebreak
+\noindent\hrulefill
+\pagebreak
+
+For the discretization \(0 \le t_1, \ldots, t_M = \pi\) and \(0 < s_1, \ldots, s_M = \pi\) the matrix that implements the
+    operator \(K\) is \[
+        A_{ij} =  \underbrace{(s_j - s_{j - 1})}_{= \Delta s \approx \odif{s}}k(t_i, s_j),
+    \] where \(s_0\) is additionally defined as \(0\).
+There is no evident reason to use some other than equidistant grid points \(t_i = i\pi/M\) and \(s_j = j\pi/M\), hence
+\[
+    A_{ij}^{M,N} = (\pi/M)\, k\!\left(i \frac{\pi}{M}, j \frac{\pi}{M}\right)
+    = \frac{2}{M} \sum_{n
+    = 1}^{N} e^{-Tn^2} \sin \left( i\frac{n}{M} \right) \sin \left( j\frac{n}{M} \right),
+    \] where \(N \in \N\) is the number of the summed harmonics and is also a parameter of the discretization.
+Note that  \(N\) does not need to be very large.
+For \(T = 0.05\) and \(N = 16\), we get the relative error \[
+    \frac{\|A^{1000,16} - A^{1000, \infty}\|_{2,2}}{\|A^{1000, \infty}\|_{2,2}} \approx \frac{\|A^{1000, 16} - A^{1000,
+    100}\|_{2,2}}{\|A^{1000, 100}\|_{2,2}}  < 10^{-6}.
+\] 
+
+The comparison of the singular system \({\left\{ (x_j), (\mu_j), (y_j) \right\}}\) for the analytical solution of \(K\)
+    and the singular decomposition \(A = U_{A}\Sigma_{A}V_{A}^{\mathrm{T}}\) of discretized implementation by the matrix
+    \(A\) with the temperature \(T = 0.05\) can be seen in \cref{fig:singular-systems}.
+Notice that the sampled singular functions would not match the singular vectors of the matrix \(A\) but the singular
+    values match exactly.
+Actually the sampled singular vectors are in the relation
+\[
+    x_i(t_j) = \sqrt{M/\pi} \, (U_{A})_{ij} = \sqrt{M/\pi} \, (V_{A})_{ij},
+\] 
+    which is due to the normalization factor for the discretization space, i.e.\@ the difference in the norms in the
+    continuous and discrete space.
+In other words in order for the decomposition to compose of orthonormal vectors, it is necessary for the vectors to be
+    normalized by the grid step-size \(\sqrt{\pi/M}\).
+This can be demonstrated by calculating the norm \[
+    \|(x_i(t_j))_{j = 1}^{M}\|_{\R^M} =
+    \left\|\left(\sqrt{\frac{2}{\pi}}\,\sin(i\,t_j)\right)_{\!\!\!j = 1}^{\!\!\!M}\,\,\right\|_{\,\R^M}
+    \!\!\!\!\!\!= \sqrt{\frac{1}{\Delta t} \sum_{n = 1}^{M}\frac{2\sin^2(t_j)}{\pi} \Delta t}
+    \,\,\approx \sqrt{\frac{1}{\Delta t} \int_{0}^{\pi} \frac{2\sin^2(t)}{\pi} \odif{t}} = \frac{1}{\sqrt{\Delta t}},
+    \] where \(\Delta t\) represents the grid step-size \((t_{i} - t_{i - 1}) = \pi/M\).
+
+% TODO: There should be an explanation of the figure with the heatmaps <11-10-24> 
+
+A demonstration of the functioning of the discretized operator \(K\) by the matrix \(A^{200, 16}\) can be seen in 
+    \cref{fig:singular-demo}.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width =\textwidth]{fig_singular_vectors.pdf}
+        \caption{Singular vectors for \(A^{200, 16}\) and $K$.}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width = \textwidth]{fig_singular_values.pdf}
+        \caption{Singular values for \(A^{200, 16}\) and $K$.}
+    \end{subfigure}
+\hfill\begin{subfigure}[b]{\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{fig_heatmap_singular_vectors.pdf}
+        \caption{A heatmap representation of the matrices \(U_{A^{100,16}}\) and the corresponding sampled singular
+        functions. The \(x\)-axis is labelled by the \(t\) from the grid instead of the index of the matrices.}
+    \end{subfigure}\hfill
+    \caption{%
+        Comparison of the singular systems.
+    }
+    \label{fig:singular-systems}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width =\textwidth]{fig_singular_demo.pdf}
+        \caption{%
+            Singular functions and their corresponding images under the operator \(K\) and the discretized solution
+                using the matrix \(A^{200, 16}\) with \(T = 0.05\).
+            }
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width = \textwidth]{fig_sum_singular_demo.pdf}
+        \caption{Sum of a random linear combination of the singular functions, its image under the
+        operator \(K\) and the solution of the discretized operator for \(A^{200, 16}\) and \(T = 0.01\).
+        Here, \(a_1 =-1.1\), \(a_5 = -1.6\), \(a_6 = -1.1\), \(a_7 = -1.0\) and \(a_{14} = 0.8\).
+    }
+    \end{subfigure}
+    \caption{A demonstration of the collocation, quadrature implementation of the operator \(K\) using its singular
+        functions.}
+    \label{fig:singular-demo}
+\end{figure}
+
+\nopagebreak
+\noindent\hrulefill
+\begin{enumerate}[resume, label=(\alph*)]
+    \item  Fix the function
+    \[
+        x(s) = s \sin(s) \exp((s - \pi/2)^2).
+    \] 
+    Plot (using the discrete approximations) the functions $x$ and $y = Kx$. Perturb $y$ by adding Gaussian noise $n$ of
+        relative size $\|n\|_{L^2(0,\pi)}/\|y\|_{L^2(0,\pi)} = 2\%$ to obtain $y^\delta$, and make a Picard plot of the
+        singular values $\mu_j$, the expansion coefficients $|(y^\delta, y_j)|$ and the reconstruction coefficients
+        $|(y^\delta, y_j)|/\mu_j$.
+\end{enumerate}
+\hrulefill
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width =\textwidth]{fig_fixed_function_noised.pdf}
+        \caption{Function \(x(s)\) and its image under the operator \(K\) and the added noise.}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width = \textwidth]{fig_picard_plot.pdf}
+        \caption{%
+            Picard plot of the singular values of the operator \(\mu_j\), the coefficients of the decomposition of the
+                noisy function \(y^{\delta}\) in the basis \((y_j)\) and finally the reconstruction coefficients
+                \(|(y^{\delta}, y_j)|/\mu_j\).
+            }
+    \end{subfigure}
+    \caption{
+        Demonstration of the ill-posedness of the inverse problem when calculated by the inversion of the
+            collocated discretized operator.
+    }
+\end{figure}
+
+% TODO: Some description of what is happening here with the eigenvalues and the reconstruction coefficients <11-10-24> 
+
+\section{Abel problem}%
+\label{sec:abel-problem}
+Consider the Abel problem defined in $L^2(0, 1)$ by
+\[
+   Kx(t) = \int_0^1 k(t, s)x(s)ds, \quad k(t, s) = \begin{cases} \frac{1}{\sqrt{t-s}}, & s < t \\ 0, & s > t. \end{cases}
+\] 
+
+With your a numerical discretization based on a quadrature rule, set up the matrix $A$ corresponding to uniform $s$- and
+    $t$-meshes with $n = 1000$ points. Fix the function
+    \[
+    x(s) = s^2 - \cos(2\pi s).
+    \] 
+
+Discretize the function $x$ by a vector $x$, compute $y = Ax$ and add Gaussian noise of relative size $\delta = 10\%$ to
+    obtain $y^\delta$
+
+\begin{enumerate}[label = (\alph*)]
+    \item Compute the TSVD approximation $x_k$ for well chosen values in $k \in [1, 100]$. Create a plot of
+        reconstructions, and compare it to the ground truth $(x)$ via a plot of the relative error $\|x
+        - x_k\|/\|x\|_2$.
+    \item Compute Tikhonov solutions $x_\alpha$ for well chosen regularization parameters $\alpha \in (10^{-4}, 10)$.
+        Plot solutions and compare to TSVD.
+\end{enumerate}
+
+\nopagebreak
+\noindent\hrulefill
+
+The TSVD approximations are calculated for selected values of \(k\) in \cref{fig:abel-TSVD}. 
+The relative error dependence on \(k\) is in \cref{fig:abel-TSVD-relative-err}
+Initial trial values of \(\alpha\) of the Tikhonov approximations are selected from \(0.1\sigma\) to \(10\sigma\), where
+    \(\sigma\) is the standard deviation of the noise.
+The optimal values are selected numerically by optimizing for the relative error and are \(k_{\text{opt}} = 12\) and
+    \(\alpha_{\text{opt}} = 0.366\).
+
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width = \textwidth]{fig_abel_intro.pdf}
+        \caption{The ground truth functions and forward transformed function with added noise of power \(10\%\).}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width = \textwidth]{fig_abel_compare.pdf}
+        \caption{A comparison of the TSVD and the Tikhonov approximations for the optimal values based on the relative
+        errors.}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width = \textwidth]{fig_abel_TSVD.pdf}
+        \caption{TSVD approximation for various values of \(k\). Visually from the selection, I would choose \(k
+        = 20\).}
+        \label{fig:abel-TSVD}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width = \textwidth]{fig_abel_TSVD_relative_err.pdf}
+        \caption{The dependence of the relative error of the TSVD approximation on \(k\). The optimal value is given
+        by the red dot.}
+        \label{fig:abel-TSVD-relative-err}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+            \includegraphics[width = \textwidth]{fig_abel_Tikhonov.pdf}
+        \caption{Tikhonov approximation for various values of \(\alpha\). It is not evident from this plot, which
+        \(\alpha\) would be the best.}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width = \textwidth]{fig_abel_Tikhonov_relative_err.pdf}
+        \caption{The dependence of the relative error of the Tikhonov approximation on \(\alpha\). The optimal value
+        is given by the red dot.}
+    \end{subfigure}
+    \caption{Regularization approximations of the given function with added Gaussian noise of the power \(10\%\).}
+\end{figure}
+
+\nopagebreak
+\noindent\hrulefill
+\begin{enumerate}[label = (\alph*), resume]
+    \item Try the above with a discontinuous function $x$.
+\end{enumerate}
+\nopagebreak
+\noindent\hrulefill
+
+A discontinuous function chosen as \[
+        x(s) = \begin{cases}
+            -s^2 - \cos(2\pi s) & x > 0.5 \\
+            s^2 - \cos(2\pi s) & x \le 0.5
+        \end{cases}
+    \] is used for the same regularized reconstructions as before.
+All of the reconstructions along with the parameter selection plots are in \cref{fig:regularization-discontinuous}.
+
+Unlike for the continuous function approximation, the bigger the \(k\) in the TSVD, the better we are able to
+    approximate the discontinuity hence it visually leads to better reconstructions.
+An advantage of the Tikhonov approximation is that it is able to give a good approximation for the discontinuity.
+
+The optimal \(\alpha\) was selected computationally by Nelder Mead optimization and optimal \(k\) by exhaustive search.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width = \textwidth]{fig_abel_discont_intro.pdf}
+        \caption{The discontinuous function, its forward transform and the noisy data. The power of the noise is
+        \(10\%\).}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width = \textwidth]{fig_abel_discont_compare.pdf}
+        \caption{A comparison of the optimal regularized reconstructions based on the relative errors.}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width = \textwidth]{fig_abel_discont_TSVD.pdf}
+        \caption{TSVD approximation for various values of \(k\).}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width = \textwidth]{fig_abel_discont_TSVD_relative_err.pdf}
+        \caption{Relative error of the TSVD approximation dependent on \(k\). The optimal value is given by the red
+        dot.}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.48\textwidth}
+            \includegraphics[width = \textwidth]{fig_abel_discont_Tikhonov.pdf}
+        \caption{Tikhonov approximation for various values of \(\alpha\).}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width = \textwidth]{fig_abel_discont_Tikhonov_relative_err.pdf}
+        \caption{Relative error of the Tikhonov approximation dependent on the parameter \(\alpha\).}
+    \end{subfigure}
+    \caption{Regularization approximations and trials for selecting the optimal parameters of a discontinuous
+    function.}
+    \label{fig:regularization-discontinuous}
+\end{figure}
+
+
+\section{Deblurring}%
+\label{sec:deblurring}
+
+Let $K$ be a compact from Hilbert space $X$ to Hilbert space $Y$ with singular system ${x_j, y_j, \mu_j}$. Assume that $K$ is injective. Let $R_\alpha$ be the regularization operator for $K$ based on Tikhonov regularization written in the singular system for $K$ as
+\[
+x_\alpha = R_\alpha y = \sum_j \frac{\mu_j}{\mu_j^2 + \alpha} (y, y_j)x_j.
+\] 
+
+\begin{enumerate}[label = (\alph*)]
+  \item Show that $\lim_{\alpha \to 0} x_\alpha = x$.
+\end{enumerate}
+
+\nopagebreak
+\noindent\hrulefill
+
+Consider the norm of \[
+    \begin{split}
+        \| R_{\alpha} K x - x \|^2 &= \left\| \sum_{j = 1}^{\infty} \frac{\mu_j}{\mu_j^2 + \alpha} (y, y_j) x_j - \sum_{j
+    = 1}^{\infty} (x, x_j) x_j \right\|^2 = \left\|\sum_{j = 1}^{\infty} \frac{\mu_j^2}{\mu_j^2 + \alpha} (x, x_j) x_j - \sum_{j
+        = 1}^{\infty} (x, x_j) x_j \right\|^2 \\ 
+                                   &= \left\| \sum_{j = 1}^{\infty} \left( \frac{\mu_j^2}{\mu_j^2 + \alpha} - 1\right)(x,
+                                   x_j) x_j \right\|^2 = \sum_{j = 1}^{\infty} \left( \frac{\mu_j^2}{\mu_j^2 + \alpha}
+                                   - 1  \right)^2 (x, x_j)^2,
+    \end{split}
+\]  where the last equality is from Parseval's identity.
+Since \(\|x\|^2 < \infty\), and \[
+    \sum_{j = 1}^{\infty} \left( \frac{\mu_j^2}{\mu_j^2 + \alpha} - 1  \right)^2  (x, x_j)^2 < \sum_{j
+    = 1}^{\infty} (x, x_j)^2 =  \left\|\sum_{j = 1}^{\infty} (x, x_j) x_j\right\|^2 = \|x\|^2,
+\]  we know that for a given \(\varepsilon_1 \in \R\) there must exist some \(N_0 \in \N\) such that \(\forall N > N_0\) we have \[
+    \sum_{j = N+1}^{\infty} \left( \frac{\mu_j^2}{\mu_j^2 + \alpha} - 1  \right)^2  (x, x_j)^2 < \varepsilon_1.
+\] 
+Now since \[
+    \frac{\mu_j^2}{\mu_j^2 + \alpha} - 1  \xrightarrow{\alpha \to 0} 0,
+\] we have that for a given \(\varepsilon_2 \in \R\) there must exist \(\alpha_0 \in \R^{+}\) such that \(\forall \alpha
+    < \alpha_0\) we have the bound \[
+    \left( \frac{\mu_j^2}{\mu_j^2 + \alpha} - 1 \right)  < \varepsilon_2,
+    \] for the given \(j\).
+To finish up the argument, given any \(\varepsilon_0 \in \R^{+}\), we choose \(0 < \varepsilon_1 < \varepsilon_0\) and
+    find \(N_0(\varepsilon_1) \eqqcolon N_0\).
+Then for \( (\varepsilon_0 - \varepsilon_1)/\|x\|^2 \eqqcolon \varepsilon_2 \) 
+we find an \(\alpha_0 \coloneqq \min \left\{ \alpha_0(\varepsilon_2, j) \right\}\).
+All together, we have for any \(\varepsilon_0\) there exists an \(\alpha_0\) such that \(\forall \alpha < \alpha_0\) real
+    positive \[
+        \begin{split}
+            \sum_{j = 1}^{\infty} \left( \frac{\mu_j^2}{\mu_j^2 + \alpha} - 1  \right)^2 (x, x_j)^2 &= 
+    \sum_{j = 1}^{N_0} \left( \frac{\mu_j^2}{\mu_j^2 + \alpha} - 1  \right)^2 (x, x_j)^2 +
+            \sum_{j = N_0 + 1}^{\infty} \left( \frac{\mu_j^2}{\mu_j^2 + \alpha} - 1  \right)^2 (x, x_j)^2 \\
+                                                                                                    &< \frac{ \varepsilon_0
+                                                                                                    - \varepsilon_1
+                                                                                                }{\|x\|^2} \sum_{j
+                                                                                                = 1}^{n_0}  (x, x_j)^2
+                                                                                                + \varepsilon_1 \le
+                                                                                                \frac{\varepsilon_0
+                                                                                                - \varepsilon_1}{\|x\|^2}
+                                                                                                \|x\|^2 + \varepsilon_1
+                                                                                                = \varepsilon_0,
+        \end{split}
+\] which by definition gives the statement.
+
+\nopagebreak
+\noindent\hrulefill
+\begin{enumerate}[label = (\alph*), resume]
+  \item Consider the deblurring model problem with solution $x$, matrix $A$, $y = Ax$, and $y^\delta = y + d$ with $\|d\| < \delta$. Choose the Tikhonov regularization parameter $\alpha(\delta)$ such that
+      \[
+	\lim_{\delta \to 0} \alpha(\delta) = 0, \quad \lim_{\delta \to 0}\frac{\delta^2}{\alpha(\delta)} = 0.
+      \] 
+Demonstrate numerically that $\lim_{\delta \to 0} \|R_{\alpha(\delta)}y^\delta - x\| = 0$.
+\end{enumerate}
+\nopagebreak
+\noindent\hrulefill
+
+The deblurring model is given by
+    \[
+        k(z) = \begin{cases}
+        1 + \cos(\pi z/3), & |z| < 3, \\
+        0, & |z| \geq 3.
+        \end{cases}
+    \] 
+    as a convolution $K$ in $L^2(-6, 6)$ defined as
+    \[
+    Kx(t) = \int_{-6}^6 k(t-s)x(s)ds \tag{1}
+    \] 
+
+A choice of \(\alpha(\delta) = \delta\) meets these requirements.
+
+The numerical experiments that demonstrate the statement for the chosen function \[
+    x(s) = e^{-15(s - 0.6)^2} \sin(7\pi s)^6 s^2 (3-s)
+    \] are give in the \cref{fig:limit}. 
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width =\textwidth]{fig_limit_demo.pdf}
+        \caption{Reconstructions with different values for \(\alpha(\delta)\) showing the visual convergence to the true
+            result with the decrease in noise.}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \includegraphics[width = \textwidth]{fig_numerical_limit.pdf}
+        \caption{The relative error of a reconstruction with the strategy \(\alpha(\delta) = \delta\) in relation to
+        \(\delta\).}
+    \end{subfigure}
+    \caption{A numerical demonstration of the convergence of the regularization to the true result. The number of steps
+    in the grid is chosen as \(100\) for performance reasons.}
+    \label{fig:limit}
+\end{figure}

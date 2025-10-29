@@ -1,0 +1,55 @@
+\documentclass[a4paper, 11pt, single, leqno]{article}
+\usepackage[right=1.5cm, left=1.5cm, top = 1.7cm, bottom = 1cm, includefoot]{geometry}
+
+\usepackage{amsmath, amssymb, mathtools, mathrsfs, amsthm, derivative, siunitx}  
+\newtheorem*{theorem}{Theorem}
+
+\usepackage{fontspec}
+\usepackage{newcomputermodern}
+\setmonofont{JuliaMono}
+
+\usepackage{enumitem}
+
+\usepackage{hyperref,cleveref}
+\usepackage[perpage, symbol*, flushmargin, hang, bottom]{footmisc}
+% NOTE: This eliminates the asterisk from use in footnote symbols. It is used in the document for stationary states...
+\DefineFNsymbols{noasterisk}{\dagger\ddagger{\dagger\dagger}{\ddagger\ddagger}\S\P\|} 
+\setfnsymbol{noasterisk}
+
+\usepackage[
+    backend=biber,
+    style=alphabetic,
+    sorting=ynt,
+]{biblatex}
+\setlength{\parskip}{.5\baselineskip plus 2pt}
+\addbibresource{resources.bib}
+\input{_commands.tex}
+
+\usepackage{indentfirst}
+\usepackage{float}
+
+\usepackage{graphicx}
+\graphicspath{{figs/}}
+\usepackage{tikz, pgfplots}
+\usetikzlibrary{math, shapes, external, backgrounds, shadings, decorations.markings, positioning}
+\usepackage{tkz-euclide}
+\usepackage{import}
+\usepackage{subcaption}
+\usepackage{minted}
+
+\captionsetup[subfigure]{subrefformat=simple,labelformat=simple}
+\renewcommand\thesubfigure{(\alph{subfigure})}
+\pgfkeys{/pgfplots/AxisStyle/.style={height=10cm,width=0.9\linewidth,scale only axis}}
+\usepackage{fancyhdr}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Martin Kunz}
+\chead{Homework Assignment 2}
+\lhead{\today}
+
+\cfoot{\thepage}
+
+\begin{document}
+% TODO: Make the title smaller vertically. <07-10-24> 
+% \maketitle
