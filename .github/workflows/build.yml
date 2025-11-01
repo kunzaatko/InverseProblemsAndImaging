@@ -1,0 +1,61 @@
+---
+name: 'Build LaTeX Document with Biber'
+on:
+  push:
+    branches:
+      - trunk
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - uses: actions/cache@v4
+        name: Tectonic Cache
+        with:
+          path: ~/.cache/Tectonic
+          key: ${{ runner.os }}-tectonic-${{ hashFiles('**/*.tex') }}
+          restore-keys: |
+           ${{ runner.os }}-tectonic-
+      - uses: wtfjoke/setup-tectonic@v3
+        name: Setup Tectonic
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          biber-version: '2.17'
+
+      - name: Install julia pygments
+        run: |
+          python -m pip install --upgrade git+https://github.com/sisl/pygments-julia#egg=pygments_julia
+          python -m pip install Pygments
+
+      - uses: actions/cache@v4
+        id: cache-julia-mono
+        name: JuliaMono Font Cache
+        with:
+          path: /usr/share/fonts/julia_mono
+          key: ${{ runner.os }}-julia-mono
+      - name: Install JuliaMono Font
+        if: steps.cache-julia-mono.outputs.cache-hit != 'true'
+        run: |
+          wget -O JuliaMono-ttf.zip https://github.com/cormullion/juliamono/releases/latest/download/JuliaMono-ttf.zip
+          unzip -d julia_mono/ JuliaMono-ttf.zip
+          mv julia_mono /usr/share/fonts/
+          fc-cache -fv
+
+      - name: Build documents
+        run: |
+          for i in homeworks/*; do
+            cd $i
+            mkdir shell-escape
+            tectonic -X build
+            cd ../..
+          done
+
+      - name: Upload pdf
+        uses: actions/upload-artifact@v4
+        with:
+          name: Documents
+          path: homeworks/*/build/*/*.pdf
