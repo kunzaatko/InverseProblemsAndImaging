@@ -23,11 +23,11 @@ This assignment addresses the backwards heat equation, an extremely ill-posed in
 - **Report**: [HW_2_Martin_Kunz.pdf](https://github.com/kunzaatko/InverseProblemsAndImaging/releases/download/v1.0.0/HW_2_Martin_Kunz.pdf)
 
 Key figures:
-- ![Karin-Harbo test case](homeworks/HW_2/src/figs/fig_karin_harbo.svg)  
+- ![Karin-Harbo test case](homeworks/HW_2/src/figs/fig_karin_harbo.png)  
   Initial condition for the backwards heat equation problem.
-- ![Landweber iteration reconstruction](homeworks/HW_2/src/figs/fig_landweber_reconstruction.svg)  
+- ![Landweber iteration reconstruction](homeworks/HW_2/src/figs/fig_landweber_reconstruction.png)  
   Iterative Landweber method recovering the initial temperature distribution.
-- ![Comparison of regularization methods](homeworks/HW_2/src/figs/fig_comparison_tikhonov_sobolev.snv)  
+- ![Comparison of regularization methods](homeworks/HW_2/src/figs/fig_comparison_tikhonov_sobolev.png)  
   Tikhonov vs. Sobolev regularization for stability.
 
 ### Homework 3: Autoconvolution Inverse Problem
@@ -35,7 +35,7 @@ This homework deals with the non-linear inverse problem of autoconvolution, wher
 - **Report**: [HW_3_Martin_Kunz.pdf](https://github.com/kunzaatko/InverseProblemsAndImaging/releases/download/v1.0.0/HW_3_Martin_Kunz.pdf)
 
 Key figures:
-- ![Forward autoconvolution comparison](homeworks/HW_3/src/figs/fig_compare_quadrature_v_analytical_forward_autoconvolution.svg)  
+- ![Forward autoconvolution comparison](homeworks/HW_3/src/figs/fig_compare_quadrature_v_analytical_forward_autoconvolution.png)  
   Numerical vs. analytical forward operator for autoconvolution.
-- ![Newton method iterations](homeworks/HW_3/src/figs/fig_newton_iterations_reg_lines.svg)  
+- ![Newton method iterations](homeworks/HW_3/src/figs/fig_newton_iterations_reg_lines.png)  
   Convergence of Newton's method for the non-linear inverse problem.
