@@ -1,11 +1,14 @@
 # Introduction to Inverse Problems and Imaging
 
-This repository contains materials for the master's course "Introduction to Inverse Problems and Imaging" at ČVUT. It includes homework assignments, lecture notes, and MATLAB code focused on solving inverse problems using numerical methods and regularization techniques.
+This repository contains materials for the master's course "Introduction to Inverse Problems and Imaging" at ČVUT. It
+includes homework assignments, lecture notes, and MATLAB code focused on solving inverse problems using numerical
+methods and regularization techniques.
 
 ## Homework Assignments
 
 ### Homework 1: Abel Integral Equation
-This homework explores the inversion of the Abel integral equation, a classic ill-posed problem in inverse problems, using regularization techniques like Truncated SVD and Tikhonov regularization to handle noise and instability.
+This homework explores the inversion of the Abel integral equation, a classic ill-posed problem in inverse problems,
+using regularization techniques like Truncated SVD and Tikhonov regularization to handle noise and instability.
 - **Exam Slides**: [Exam_slides_1_Martin_Kunz.pdf](https://github.com/kunzaatko/InverseProblemsAndImaging/releases/download/v1.0.0/Exam_slides_1_Martin_Kunz.pdf)
 - **Report**: [HW_1_Martin_Kunz.pdf](https://github.com/kunzaatko/InverseProblemsAndImaging/releases/download/v1.0.0/HW_1_Martin_Kunz.pdf)
 
@@ -18,7 +21,9 @@ Key figures:
   Tikhonov method balancing data fit and smoothness.
 
 ### Homework 2: Backwards Heat Equation
-This assignment addresses the backwards heat equation, an extremely ill-posed inverse problem where small errors in data measurements lead to large errors in the reconstructed initial condition, demonstrating the need for advanced regularization methods.
+This assignment addresses the backwards heat equation, an extremely ill-posed inverse problem where small errors in data
+measurements lead to large errors in the reconstructed initial condition, demonstrating the need for advanced
+regularization methods.
 - **Exam Slides**: [Exam_slides_2_Martin_Kunz.pdf](https://github.com/kunzaatko/InverseProblemsAndImaging/releases/download/v1.0.0/Exam_slides_2_Martin_Kunz.pdf)
 - **Report**: [HW_2_Martin_Kunz.pdf](https://github.com/kunzaatko/InverseProblemsAndImaging/releases/download/v1.0.0/HW_2_Martin_Kunz.pdf)
 
@@ -31,7 +36,8 @@ Key figures:
   Tikhonov vs. Sobolev regularization for stability.
 
 ### Homework 3: Autoconvolution Inverse Problem
-This homework deals with the non-linear inverse problem of autoconvolution, where the forward operator is a convolution of the unknown function with itself, solved using Newton's method with appropriate regularization for convergence.
+This homework deals with the non-linear inverse problem of autoconvolution, where the forward operator is a convolution
+of the unknown function with itself, solved using Newton's method with appropriate regularization for convergence.
 - **Report**: [HW_3_Martin_Kunz.pdf](https://github.com/kunzaatko/InverseProblemsAndImaging/releases/download/v1.0.0/HW_3_Martin_Kunz.pdf)
 
 Key figures:
