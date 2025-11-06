@@ -9,8 +9,8 @@ methods and regularization techniques.
 ### Homework 1: Abel Integral Equation
 This homework explores the inversion of the Abel integral equation, a classic ill-posed problem in inverse problems,
 using regularization techniques like Truncated SVD and Tikhonov regularization to handle noise and instability.
-- **Exam Slides**: [Exam_slides_1_Martin_Kunz.pdf](https://github.com/kunzaatko/InverseProblemsAndImaging/releases/download/v1.0.0/Exam_slides_1_Martin_Kunz.pdf)
-- **Report**: [HW_1_Martin_Kunz.pdf](https://github.com/kunzaatko/InverseProblemsAndImaging/releases/download/v1.0.0/HW_1_Martin_Kunz.pdf)
+- **Exam Slides**: [Exam_slides_1_Martin_Kunz.pdf](https://github.com/kunzaatko/InverseProblemsAndImaging/releases/latest/download/Exam_slides_1_Martin_Kunz.pdf)
+- **Report**: [HW_1_Martin_Kunz.pdf](https://github.com/kunzaatko/InverseProblemsAndImaging/releases/latest/download/HW_1_Martin_Kunz.pdf)
 
 #### Figures
 - Singular system comparison for the heat equation: **(1)** Singular vectors for the discretized operator and the
@@ -89,8 +89,8 @@ using regularization techniques like Truncated SVD and Tikhonov regularization t
 This assignment addresses the backwards heat equation, an extremely ill-posed inverse problem where small errors in data
 measurements lead to large errors in the reconstructed initial condition, demonstrating the need for advanced
 regularization methods.
-- **Exam Slides**: [Exam_slides_2_Martin_Kunz.pdf](https://github.com/kunzaatko/InverseProblemsAndImaging/releases/download/v1.0.0/Exam_slides_2_Martin_Kunz.pdf)
-- **Report**: [HW_2_Martin_Kunz.pdf](https://github.com/kunzaatko/InverseProblemsAndImaging/releases/download/v1.0.0/HW_2_Martin_Kunz.pdf)
+- **Exam Slides**: [Exam_slides_2_Martin_Kunz.pdf](https://github.com/kunzaatko/InverseProblemsAndImaging/releases/latest/download/Exam_slides_2_Martin_Kunz.pdf)
+- **Report**: [HW_2_Martin_Kunz.pdf](https://github.com/kunzaatko/InverseProblemsAndImaging/releases/latest/download/HW_2_Martin_Kunz.pdf)
 
 #### Figures
 - Heat equation forward solution: **(1)** The function $x(s_1, s_2) = \sin(ks_1) \sin(ls_2)$, **(2)** forward pass of
@@ -136,7 +136,7 @@ $L_1$ matrix
 ### Homework 3: Autoconvolution Inverse Problem
 This homework deals with the non-linear inverse problem of autoconvolution, where the forward operator is a convolution
 of the unknown function with itself, solved using Newton's method with appropriate regularization for convergence.
-- **Report**: [HW_3_Martin_Kunz.pdf](https://github.com/kunzaatko/InverseProblemsAndImaging/releases/download/v1.0.0/HW_3_Martin_Kunz.pdf)
+- **Report**: [HW_3_Martin_Kunz.pdf](https://github.com/kunzaatko/InverseProblemsAndImaging/releases/latest/download/HW_3_Martin_Kunz.pdf)
 
 #### Figures
 - Forward autoconvolution operator comparison: **(1)** Numerical quadrature solution vs. analytical solution, **(2)** their difference
